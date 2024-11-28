@@ -36,7 +36,10 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen name="index" />
-      <Stack.Screen name="(root)" />
+      <Stack.Screen name="(root)/(tabs)/chat" />
+      <Stack.Screen name="(root)/(tabs)/home" />
+      <Stack.Screen name="(root)/(tabs)/profile" />
+      <Stack.Screen name="(root)/(tabs)/rides" />
       <Stack.Screen name="+not-found" />
     </Stack>
   );
