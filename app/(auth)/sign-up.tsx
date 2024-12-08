@@ -7,6 +7,7 @@ import { Link, router } from "expo-router";
 import OAuth from "@/components/OAuth";
 import { useSignUp } from "@clerk/clerk-expo";
 import { ReactNativeModal } from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -56,6 +57,14 @@ const SignUp = () => {
 
       if (completeSignUp.status === "complete") {
         // TODO: create the user in our database as well
+        await fetchAPI("/(api)/user", {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            clerkId: completeSignUp.createdUserId,
+          }),
+        });
 
         await setActive({ session: completeSignUp.createdSessionId });
 
@@ -71,6 +80,7 @@ const SignUp = () => {
         });
       }
     } catch (err: any) {
+      console.log("Error:", err);
       setVerification({
         ...verification,
         error: err.errors[0].longMessage,
@@ -132,9 +142,11 @@ const SignUp = () => {
 
           <ReactNativeModal
             isVisible={verification.state === "pending"}
-            onModalHide={() =>
-              setVerification({ ...verification, state: "success" })
-            }
+            onModalHide={() => {
+              if (verification.state === "success") {
+                setShowSuccessModal(true);
+              }
+            }}
           >
             <View className="bg-white px-7 py-9 rounded-2xl min-h-[300px]">
               <Text className="font-JakartaExtraBold text-2xl mb-2">
@@ -180,7 +192,7 @@ const SignUp = () => {
               </Text>
               <CustomButton
                 title="Browse Home"
-                onPress={() => router.push(`/(root)/(tabs)/home`)}
+                onPress={() => router.push(`/home`)}
                 className="mt-5"
               />
             </View>
